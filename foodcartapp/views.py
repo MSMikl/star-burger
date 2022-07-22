@@ -69,14 +69,14 @@ def register_order(request):
     data = request.data
     print(data.get('products'))
     if (not isinstance(data.get('products'), list)) or (not data.get('products')):
-        content = {'error in products field': 'uncorrect request'}
+        content = {'products': 'некорректные данные в поле'}
         return Response(content, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
     for field in ['firstname', 'lastname', 'address']:
         if (not isinstance(data.get(field), str)) or (not data.get(field)):
-            content = {f'error in {field} field': 'uncorrect request'}
+            content = {f'{field}': 'некорректные данные в поле'}
             return Response(content, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
     if not phonenumbers.is_valid_number(phonenumbers.parse(data.get('phonenumber'), 'RU')):
-        content = {f'error in "phonenumber" field': 'uncorrect request'}
+        content = {'phonenumber': 'некорректный номер телефона'}
         return Response(content, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
     order = Order.objects.create(
         firstname=data.get('firstname', 'N/A'),
@@ -84,11 +84,16 @@ def register_order(request):
         phonenumber=data.get('phonenumber', 'N/A'),
         address=data.get('address', 'N/A')
     )
-    for product in data.get('products', []):
-        OrderElement.objects.create(
-            product=Product.objects.get(id=product['product']),
-            quantity=product['quantity'],
-            order=order,
-        )
+    try:
+        for product in data.get('products', []):
+            OrderElement.objects.create(
+                product=Product.objects.get(id=product['product']),
+                quantity=product['quantity'],
+                order=order,
+            )
+    except Product.DoesNotExist:
+        order.delete()
+        content = {'products': 'несуществующий id продукта в заказе'}
+        return Response(content, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
     print(order)
     return JsonResponse({})
