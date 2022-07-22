@@ -1,8 +1,12 @@
 import json
 
+import phonenumbers
+
 from django.http import JsonResponse
 from django.templatetags.static import static
+from rest_framework import status
 from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 
 from .models import Product, Order, OrderElement
@@ -63,7 +67,17 @@ def product_list_api(request):
 @api_view(['POST'])
 def register_order(request):
     data = request.data
-    print(data)
+    print(data.get('products'))
+    if (not isinstance(data.get('products'), list)) or (not data.get('products')):
+        content = {'error in products field': 'uncorrect request'}
+        return Response(content, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+    for field in ['firstname', 'lastname', 'address']:
+        if (not isinstance(data.get(field), str)) or (not data.get(field)):
+            content = {f'error in {field} field': 'uncorrect request'}
+            return Response(content, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+    if not phonenumbers.is_valid_number(phonenumbers.parse(data.get('phonenumber'), 'RU')):
+        content = {f'error in "phonenumber" field': 'uncorrect request'}
+        return Response(content, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
     order = Order.objects.create(
         firstname=data.get('firstname', 'N/A'),
         lastname=data.get('lastname', 'N/A'),
