@@ -7,6 +7,8 @@ from django.templatetags.static import static
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import ListField
 
 
 from .models import Product, Order, OrderElement
@@ -64,36 +66,41 @@ def product_list_api(request):
     })
 
 
+
+class ElementSerializer(ModelSerializer):
+    class Meta:
+        model = OrderElement
+        fields = ['product', 'quantity']
+
+
+class OrderSerializer(ModelSerializer):
+    products = ListField(
+        child=ElementSerializer(),
+        allow_empty=False
+    )
+    class Meta:
+        model = Order
+        fields = ['firstname', 'lastname', 'address', 'phonenumber','products']
+
+
 @api_view(['POST'])
 def register_order(request):
     data = request.data
-    print(data.get('products'))
-    if (not isinstance(data.get('products'), list)) or (not data.get('products')):
-        content = {'products': 'некорректные данные в поле'}
-        return Response(content, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-    for field in ['firstname', 'lastname', 'address']:
-        if (not isinstance(data.get(field), str)) or (not data.get(field)):
-            content = {f'{field}': 'некорректные данные в поле'}
-            return Response(content, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-    if not phonenumbers.is_valid_number(phonenumbers.parse(data.get('phonenumber'), 'RU')):
-        content = {'phonenumber': 'некорректный номер телефона'}
-        return Response(content, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+    serializer = OrderSerializer(data=data)
+    serializer.is_valid(raise_exception=True)
+
     order = Order.objects.create(
-        firstname=data.get('firstname', 'N/A'),
-        lastname=data.get('lastname', 'N/A'),
-        phonenumber=data.get('phonenumber', 'N/A'),
-        address=data.get('address', 'N/A')
+        firstname=serializer.validated_data['firstname'],
+        lastname=serializer.validated_data['lastname'],
+        phonenumber=serializer.validated_data['phonenumber'],
+        address=serializer.validated_data['address'],
     )
-    try:
-        for product in data.get('products', []):
+    print(serializer.validated_data['products'])
+    for product in serializer.validated_data['products']:
             OrderElement.objects.create(
-                product=Product.objects.get(id=product['product']),
+                product=product['product'],
                 quantity=product['quantity'],
                 order=order,
             )
-    except Product.DoesNotExist:
-        order.delete()
-        content = {'products': 'несуществующий id продукта в заказе'}
-        return Response(content, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
     print(order)
     return JsonResponse({})
