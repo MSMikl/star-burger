@@ -1,7 +1,3 @@
-import json
-
-import phonenumbers
-
 from django.http import JsonResponse
 from django.templatetags.static import static
 from rest_framework import status
