@@ -6,6 +6,7 @@ from django.http import JsonResponse
 from django.templatetags.static import static
 from rest_framework import status
 from rest_framework.decorators import api_view
+from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.serializers import ModelSerializer
 from rest_framework.serializers import ListField
@@ -66,7 +67,6 @@ def product_list_api(request):
     })
 
 
-
 class ElementSerializer(ModelSerializer):
     class Meta:
         model = OrderElement
@@ -76,11 +76,12 @@ class ElementSerializer(ModelSerializer):
 class OrderSerializer(ModelSerializer):
     products = ListField(
         child=ElementSerializer(),
-        allow_empty=False
+        allow_empty=False,
+        write_only=True,
     )
     class Meta:
         model = Order
-        fields = ['firstname', 'lastname', 'address', 'phonenumber','products']
+        fields = ['id', 'firstname', 'lastname', 'address', 'phonenumber','products']
 
 
 @api_view(['POST'])
@@ -97,10 +98,11 @@ def register_order(request):
     )
     print(serializer.validated_data['products'])
     for product in serializer.validated_data['products']:
-            OrderElement.objects.create(
-                product=product['product'],
-                quantity=product['quantity'],
-                order=order,
-            )
-    print(order)
-    return JsonResponse({})
+        OrderElement.objects.create(
+            product=product['product'],
+            quantity=product['quantity'],
+            order=order,
+        )
+    serializer = OrderSerializer(order)
+    print(serializer)
+    return JsonResponse(serializer.data)
