@@ -97,7 +97,7 @@ def view_restaurants(request):
 
 @user_passes_test(is_manager, login_url='restaurateur:login')
 def view_orders(request):
-    orders = Order.objects.full_price()
+    orders = Order.objects.full_price().order_by('-id')
     print(orders)
     data = {'order_items': [
             {

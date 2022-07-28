@@ -130,7 +130,7 @@ class OrderQuerySet(models.QuerySet):
         return (
             self
             .select_related()
-            .annotate(full_price=Sum(F('elements__product__price') * F('elements__quantity')))
+            .annotate(full_price=Sum(F('elements__price') * F('elements__quantity')))
         )
 
 
@@ -163,6 +163,10 @@ class Order(models.Model):
         return f"Заказ {self.id}"
 
 
+def default_price(product: Product):
+    return product.price
+
+
 class OrderElement(models.Model):
     product = models.ForeignKey(
         Product,
@@ -179,6 +183,13 @@ class OrderElement(models.Model):
         on_delete=models.CASCADE,
         related_name='elements',
         verbose_name='заказ',
+    )
+    price = models.DecimalField(
+        'стоимость продукта',
+        decimal_places=2,
+        max_digits=8,
+        default=0,
+        validators=[MinValueValidator(0)],
     )
 
     class Meta:
