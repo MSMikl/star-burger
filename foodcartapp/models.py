@@ -132,6 +132,7 @@ class OrderQuerySet(models.QuerySet):
             self
             .select_related()
             .annotate(full_price=Sum(F('elements__price') * F('elements__quantity')))
+            .order_by('-id')
         )
 
 
@@ -154,6 +155,20 @@ class Order(models.Model):
         max_length=100,
         db_index=True,
     )
+    status_choices = [
+        ('Unhandled', 'Необработанный'),
+        ('Preparing', 'Готовится'),
+        ('Delivering', 'Доставляется'),
+        ('Finished', 'Завершенный'),
+    ]
+    status = models.CharField(
+        'Статус заказа',
+        max_length=20,
+        choices=status_choices,
+        default='Unhandled',
+        db_index=True,
+    )
+
     objects = OrderQuerySet.as_manager()
 
     class Meta:
