@@ -105,7 +105,8 @@ def view_orders(request):
                 'client': f"{order.firstname} {order.lastname}",
                 'phonenumber': order.phonenumber,
                 'address': order.address,
-                'status': order.get_status_display()
+                'status': order.get_status_display(),
+                'comments': order.comments,
             }
             for order in orders
         ]
