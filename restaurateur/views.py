@@ -105,7 +105,6 @@ def view_orders(request):
                 'client': f"{order.firstname} {order.lastname}",
                 'phonenumber': order.phonenumber,
                 'address': order.address,
-                'edit_url': reverse('admin:foodcartapp_order_change', args=(order.id,)),
             }
             for order in orders
         ]
