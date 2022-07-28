@@ -197,7 +197,8 @@ class Order(models.Model):
         'Способ оплаты',
         max_length=20,
         choices=payment_method_choices,
-        default='cash'
+        default='cash',
+        db_index=True
     )
 
     objects = OrderQuerySet.as_manager()
