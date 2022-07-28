@@ -189,6 +189,16 @@ class Order(models.Model):
         null=True,
         db_index=True
     )
+    payment_method_choices = [
+        ('online', 'Онлайн'),
+        ('cash', 'Наличными'),
+    ]
+    payment_method = models.CharField(
+        'Способ оплаты',
+        max_length=20,
+        choices=payment_method_choices,
+        default='cash'
+    )
 
     objects = OrderQuerySet.as_manager()
 
