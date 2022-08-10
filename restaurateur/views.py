@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from django import forms
 from django.shortcuts import redirect, render
 from django.views import View
@@ -8,7 +10,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
 
 
-from foodcartapp.models import Product, Restaurant, Order
+from foodcartapp.models import Product, Restaurant, Order, RestaurantMenuItem, OrderElement
 
 
 class Login(forms.Form):
@@ -97,8 +99,24 @@ def view_restaurants(request):
 
 @user_passes_test(is_manager, login_url='restaurateur:login')
 def view_orders(request):
-    orders = Order.objects.exclude(status='Finished').full_price()
-    data = {'order_items': [
+    orders = Order.objects.exclude(status='Finished').full_price().order_by('-status')
+    menu_items = RestaurantMenuItem.objects.select_related().all()
+    product_availability = defaultdict(set)
+    for item in menu_items:
+        if item.product.id not in product_availability[item.restaurant]:
+            product_availability[item.restaurant].add(item.product.id)
+    print(product_availability)
+
+    order_elements = OrderElement.objects.filter(order__status='Unhandled').select_related()
+    order_elements_dict = defaultdict(set)
+    for order_element in order_elements:
+        order_elements_dict[order_element.order].add(order_element.product.id)
+    print(order_elements_dict)
+
+    data = {'orders': []}
+
+    for order in orders:
+        data['orders'].append(
             {
                 'id': order.id,
                 'full_price': order.full_price,
@@ -108,8 +126,15 @@ def view_orders(request):
                 'status': order.get_status_display(),
                 'comments': order.comments,
                 'payment_method': order.get_payment_method_display(),
+                'restaurant': order.produced_at.name if order.produced_at else None
             }
-            for order in orders
-        ]
-    }
+        )
+        if not order.status == 'Unhandled':
+            continue
+        available_rests = []
+        for (restaurant, menu) in product_availability.items():
+            if order_elements_dict[order].issubset(menu):
+                available_rests.append(restaurant.name)
+        data['orders'][-1]['available_rests'] = available_rests
+
     return render(request, template_name='order_items.html', context=data)
