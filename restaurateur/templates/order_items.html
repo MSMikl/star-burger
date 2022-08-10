@@ -41,7 +41,7 @@
           Может приготовить:
             <details>
               {% for restaurant in order.available_rests %}
-              <p> - {{ restaurant }}</p> 
+              <p> - {{ restaurant.0 }} - {{ restaurant.1 }} км</p> 
               {% endfor %}
             </details>
           {% endif %}
