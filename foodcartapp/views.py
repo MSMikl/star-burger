@@ -10,6 +10,7 @@ from rest_framework.serializers import ListField
 
 
 from .models import Product, Order, OrderElement
+from location.models import Location
 
 
 def banners_list_api(request):
@@ -94,6 +95,7 @@ def register_order(request):
         phonenumber=serializer.validated_data['phonenumber'],
         address=serializer.validated_data['address'],
     )
+    Location.objects.get_or_create(serializer.validated_data['address'])
     for product in serializer.validated_data['products']:
         OrderElement.objects.create(
             product=product['product'],

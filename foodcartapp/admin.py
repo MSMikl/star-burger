@@ -12,6 +12,7 @@ from .models import Restaurant
 from .models import RestaurantMenuItem
 from .models import Order
 from .models import OrderElement
+from location.models import Location
 
 
 class RestaurantMenuItemInline(admin.TabularInline):
@@ -39,7 +40,6 @@ class RestaurantAdmin(admin.ModelAdmin):
     inlines = [
         RestaurantMenuItemInline
     ]
-
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
@@ -136,3 +136,8 @@ class OrderAdmin(admin.ModelAdmin):
             return HttpResponseRedirect(request.GET['next'])
         else:
             return res
+
+
+@admin.register(Location)
+class LocationAdmin(admin.ModelAdmin):
+    pass

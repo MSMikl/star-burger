@@ -1,8 +1,22 @@
 from django.db import models
-from django.db.models import F, Sum
+from django.db.models import F, Sum, OuterRef, Subquery
 from django.core.validators import MinValueValidator
 from django.utils import timezone
 from phonenumber_field.modelfields import PhoneNumberField
+
+from location.models import Location
+
+
+class RestaurantQuerySet(models.QuerySet):
+    def with_coordinates(self):
+        location = Location.objects.filter(address=OuterRef('address'))
+        return(
+            self
+            .annotate(
+                longitude=Subquery(location.values('longitude')[:1]),
+                latitude=Subquery(location.values('latitude')[:1])
+            )
+        )
 
 
 class Restaurant(models.Model):
@@ -20,6 +34,8 @@ class Restaurant(models.Model):
         max_length=50,
         blank=True,
     )
+
+    objects = RestaurantQuerySet.as_manager()
 
     class Meta:
         verbose_name = 'ресторан'
@@ -135,6 +151,15 @@ class OrderQuerySet(models.QuerySet):
             .order_by('-id')
         )
 
+    def with_coordinates(self):
+        location = Location.objects.filter(address=OuterRef('address'))
+        return(
+            self
+            .annotate(
+                longitude=Subquery(location.values('longitude')[:1]),
+                latitude=Subquery(location.values('latitude')[:1])
+            )
+        )
 
 class Order(models.Model):
     firstname = models.CharField(
@@ -205,7 +230,8 @@ class Order(models.Model):
         on_delete=models.CASCADE,
         related_name='orders',
         verbose_name='Приготовить в ресторане',
-        null=True
+        null=True,
+        blank=True,
     )
 
     objects = OrderQuerySet.as_manager()

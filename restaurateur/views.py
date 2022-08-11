@@ -14,6 +14,7 @@ from geopy import distance
 
 
 from foodcartapp.models import Product, Restaurant, Order, RestaurantMenuItem, OrderElement
+from location.models import Location
 
 
 class Login(forms.Form):
@@ -99,27 +100,10 @@ def view_restaurants(request):
         'restaurants': Restaurant.objects.all(),
     })
 
-def fetch_coordinates(apikey, address):
-    base_url = "https://geocode-maps.yandex.ru/1.x"
-    response = requests.get(base_url, params={
-        "geocode": address,
-        "apikey": apikey,
-        "format": "json",
-    })
-    response.raise_for_status()
-    found_places = response.json()['response']['GeoObjectCollection']['featureMember']
-
-    if not found_places:
-        return None
-
-    most_relevant = found_places[0]
-    lon, lat = most_relevant['GeoObject']['Point']['pos'].split(" ")
-    return lon, lat
-
 
 @user_passes_test(is_manager, login_url='restaurateur:login')
 def view_orders(request):
-    orders = Order.objects.exclude(status='Finished').full_price().order_by('-status')
+    orders = Order.objects.exclude(status='Finished').full_price().order_by('-status').with_coordinates()
     menu_items = RestaurantMenuItem.objects.select_related().all()
     product_availability = defaultdict(set)
     restaurants_coordinates = {}
@@ -127,8 +111,7 @@ def view_orders(request):
         if item.product.id not in product_availability[item.restaurant]:
             product_availability[item.restaurant].add(item.product.id)
         if not restaurants_coordinates.get(item.restaurant):
-            restaurants_coordinates[item.restaurant] = fetch_coordinates(settings.GEOCODER_API_KEY, item.restaurant.address) or 'ERROR'
-    
+            restaurants_coordinates[item.restaurant] = Location.objects.get_or_create_location(item.restaurant.address)
     order_elements = OrderElement.objects.filter(order__status='Unhandled').select_related()
     order_elements_dict = defaultdict(set)
     for order_element in order_elements:
@@ -153,14 +136,13 @@ def view_orders(request):
         )
         if not order.status == 'Unhandled':
             continue
-        order_coordinates = fetch_coordinates(settings.GEOCODER_API_KEY, order.address) or 'ERROR'
         available_rests = []
         for (restaurant, menu) in product_availability.items():
             if order_elements_dict[order].issubset(menu):
-                if restaurants_coordinates[restaurant] == 'ERROR' or order_coordinates == 'ERROR':
+                if restaurants_coordinates[restaurant]['longitude'] == 'ERROR' or order.longitude == 'ERROR':
                     dist = 'Ошибка определения координат'
                 else:
-                    dist = round(distance.distance(restaurants_coordinates[restaurant], order_coordinates).km, 2)
+                    dist = round(distance.distance(tuple(restaurants_coordinates[restaurant].values()), (order.longitude, order.latitude)).km, 2)
                 available_rests.append((restaurant.name, dist))
         data['orders'][-1]['available_rests'] = available_rests
 
