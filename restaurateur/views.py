@@ -107,11 +107,14 @@ def view_orders(request):
     menu_items = RestaurantMenuItem.objects.select_related().all()
     product_availability = defaultdict(set)
     restaurants_coordinates = {}
+    for restaurant in Restaurant.objects.with_coordinates():
+        restaurants_coordinates[restaurant] = {
+            'longitude': restaurant.longitude,
+            'latitude': restaurant.latitude
+        }
     for item in menu_items:
         if item.product.id not in product_availability[item.restaurant]:
             product_availability[item.restaurant].add(item.product.id)
-        if not restaurants_coordinates.get(item.restaurant):
-            restaurants_coordinates[item.restaurant] = Location.objects.get_or_create_location(item.restaurant.address)
     order_elements = OrderElement.objects.filter(order__status='Unhandled').select_related()
     order_elements_dict = defaultdict(set)
     for order_element in order_elements:
