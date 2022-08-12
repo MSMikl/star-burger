@@ -119,7 +119,6 @@ def view_orders(request):
     order_elements_dict = defaultdict(set)
     for order_element in order_elements:
         order_elements_dict[order_element.order].add(order_element.product.id)
-    print(order_elements_dict)
 
     data = {'orders': []}
 
