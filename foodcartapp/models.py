@@ -266,7 +266,7 @@ class OrderElement(models.Model):
     )
     quantity = models.IntegerField(
         'Количество',
-        default=0,
+        default=1,
     )
     order = models.ForeignKey(
         Order,
