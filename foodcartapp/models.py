@@ -278,7 +278,6 @@ class OrderElement(models.Model):
         'стоимость продукта',
         decimal_places=2,
         max_digits=8,
-        default=0,
         validators=[MinValueValidator(0)],
     )
 
