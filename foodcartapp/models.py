@@ -143,7 +143,7 @@ class RestaurantMenuItem(models.Model):
 
 
 class OrderQuerySet(models.QuerySet):
-    def full_price(self):
+    def add_full_price(self):
         return (
             self
             .select_related()

@@ -1,3 +1,4 @@
+from urllib.error import HTTPError
 import requests
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -15,7 +16,7 @@ def fetch_coordinates(apikey, address):
             "format": "json",
         })
         response.raise_for_status()
-    except:
+    except HTTPError:
         return None, None
     found_places = response.json()['response']['GeoObjectCollection']['featureMember']
 

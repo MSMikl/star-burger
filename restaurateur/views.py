@@ -103,7 +103,7 @@ def view_restaurants(request):
 
 @user_passes_test(is_manager, login_url='restaurateur:login')
 def view_orders(request):
-    orders = Order.objects.exclude(status='Finished').full_price().order_by('-status').with_coordinates()
+    orders = Order.objects.exclude(status='Finished').add_full_price().order_by('-status').with_coordinates()
     menu_items = RestaurantMenuItem.objects.select_related().all()
     product_availability = defaultdict(set)
     restaurants_coordinates = {}

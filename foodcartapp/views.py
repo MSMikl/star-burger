@@ -95,13 +95,17 @@ def register_order(request):
         phonenumber=serializer.validated_data['phonenumber'],
         address=serializer.validated_data['address'],
     )
-    Location.objects.get_or_create(serializer.validated_data['address'])
-    for product in serializer.validated_data['products']:
-        OrderElement.objects.create(
+    print(serializer.validated_data['address'])
+    Location.objects.get_or_create_location(serializer.validated_data['address'])
+    objs = [
+        OrderElement(
             product=product['product'],
             quantity=product['quantity'],
             order=order,
             price=product['product'].price,
         )
+        for product in serializer.validated_data['products']
+    ]
+    OrderElement.objects.bulk_create(objs)
     serializer = OrderSerializer(order)
     return JsonResponse(serializer.data)
