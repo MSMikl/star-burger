@@ -267,6 +267,7 @@ class OrderElement(models.Model):
     quantity = models.IntegerField(
         'Количество',
         default=1,
+        validators=[MinValueValidator(1)]
     )
     order = models.ForeignKey(
         Order,
