@@ -53,4 +53,4 @@ class Location(models.Model):
         verbose_name_plural = 'Местоположения'
 
     def __str__(self) -> str:
-        return f'{self.address}'
+        return self.address
