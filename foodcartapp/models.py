@@ -162,6 +162,23 @@ class OrderQuerySet(models.QuerySet):
         )
 
 class Order(models.Model):
+    UNHANDLED = 'Unhandled'
+    PREPARING = 'Preparing'
+    DELIVERING = 'Delivering'
+    FINISHED = 'Finished'
+    STATUS_CHOICES = [
+        (UNHANDLED, 'Необработанный'),
+        (PREPARING, 'Готовится'),
+        (DELIVERING, 'Доставляется'),
+        (FINISHED, 'Завершенный'),
+    ]
+    ONLINE = 'online'
+    CASH = 'cash'
+    PAYMENT_METHOD_CHOICES = [
+        (ONLINE, 'Онлайн'),
+        (CASH, 'Наличными'),
+    ]
+
     firstname = models.CharField(
         'Имя клиента',
         max_length=50,
@@ -181,16 +198,11 @@ class Order(models.Model):
         max_length=100,
         db_index=True,
     )
-    status_choices = [
-        ('Unhandled', 'Необработанный'),
-        ('Preparing', 'Готовится'),
-        ('Delivering', 'Доставляется'),
-        ('Finished', 'Завершенный'),
-    ]
+
     status = models.CharField(
         'Статус заказа',
         max_length=20,
-        choices=status_choices,
+        choices=STATUS_CHOICES,
         default='Unhandled',
         db_index=True,
     )
@@ -215,14 +227,10 @@ class Order(models.Model):
         null=True,
         db_index=True
     )
-    payment_method_choices = [
-        ('online', 'Онлайн'),
-        ('cash', 'Наличными'),
-    ]
     payment_method = models.CharField(
         'Способ оплаты',
         max_length=20,
-        choices=payment_method_choices,
+        choices=PAYMENT_METHOD_CHOICES,
         default='cash',
         db_index=True
     )
