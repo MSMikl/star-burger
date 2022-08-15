@@ -133,7 +133,7 @@ def view_orders(request):
                 'status': order.get_status_display(),
                 'comments': order.comments,
                 'payment_method': order.get_payment_method_display(),
-                'restaurant': order.produced_at.name if order.produced_at else None
+                'restaurant': order.assigned_at.name if order.assigned_at else None
             }
         )
         if not order.status == 'Unhandled':

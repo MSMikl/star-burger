@@ -234,7 +234,7 @@ class Order(models.Model):
         default='cash',
         db_index=True
     )
-    produced_at = models.ForeignKey(
+    assigned_at = models.ForeignKey(
         Restaurant,
         on_delete=models.CASCADE,
         related_name='orders',
