@@ -13,6 +13,7 @@ from .models import RestaurantMenuItem
 from .models import Order
 from .models import OrderElement
 from location.models import Location
+from fetch_coordinates import fetch_coordinates
 
 
 class RestaurantMenuItemInline(admin.TabularInline):
@@ -140,4 +141,12 @@ class OrderAdmin(admin.ModelAdmin):
 
 @admin.register(Location)
 class LocationAdmin(admin.ModelAdmin):
-    pass
+    def response_add(self, request, obj, post_url_continue=None):
+        obj.longitude, obj.latitude = fetch_coordinates(settings.GEOCODER_API_KEY, obj.address)
+        obj.save()
+        return super().response_add(request, obj, post_url_continue)
+
+    def response_change(self, request, obj):
+        obj.longitude, obj.latitude = fetch_coordinates(settings.GEOCODER_API_KEY, obj.address)
+        obj.save()
+        return super().response_change(request, obj)
