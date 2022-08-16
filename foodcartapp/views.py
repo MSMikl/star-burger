@@ -95,7 +95,6 @@ def register_order(request):
         phonenumber=serializer.validated_data['phonenumber'],
         address=serializer.validated_data['address'],
     )
-    print(serializer.validated_data['address'])
     Location.objects.get_or_create_location(serializer.validated_data['address'])
     objs = [
         OrderElement(
