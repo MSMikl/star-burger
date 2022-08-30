@@ -253,10 +253,6 @@ class Order(models.Model):
         return f"Заказ {self.id}"
 
 
-def default_price(product: Product):
-    return product.price
-
-
 class OrderElement(models.Model):
     product = models.ForeignKey(
         Product,
