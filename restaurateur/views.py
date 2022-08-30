@@ -103,8 +103,8 @@ def view_restaurants(request):
 
 @user_passes_test(is_manager, login_url='restaurateur:login')
 def view_orders(request):
-    orders = Order.objects.exclude(status='Finished').add_full_price().order_by('-status').with_coordinates()
-    menu_items = RestaurantMenuItem.objects.select_related().all()
+    orders = Order.objects.exclude(status='Finished').add_full_price().order_by('-id', '-status').with_coordinates()
+    menu_items = RestaurantMenuItem.objects.select_related()
     product_availability = defaultdict(set)
     restaurants_coordinates = {}
     for restaurant in Restaurant.objects.with_coordinates():
@@ -120,10 +120,10 @@ def view_orders(request):
     for order_element in order_elements:
         order_elements_dict[order_element.order].add(order_element.product.id)
 
-    data = {'order_items': []}
+    data = {'items': []}
 
     for order in orders:
-        data['order_items'].append(
+        data['items'].append(
             {
                 'id': order.id,
                 'full_price': order.full_price,
@@ -144,8 +144,11 @@ def view_orders(request):
                 if not restaurants_coordinates[restaurant]['longitude'] or not order.longitude:
                     dist = 'Ошибка определения координат'
                 else:
-                    dist = f"{round(distance.distance(tuple(restaurants_coordinates[restaurant].values()), (order.longitude, order.latitude)).km, 2)} км"
+                    dist = f"""{round(distance.distance(
+                        tuple(restaurants_coordinates[restaurant].values()),
+                        (order.longitude, order.latitude)
+                    ).km, 2)} км"""
                 available_rests.append((restaurant.name, dist))
-        data['order_items'][-1]['available_rests'] = available_rests
+        data['items'][-1]['available_rests'] = available_rests
 
     return render(request, template_name='order_items.html', context=data)

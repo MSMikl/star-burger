@@ -146,9 +146,7 @@ class OrderQuerySet(models.QuerySet):
     def add_full_price(self):
         return (
             self
-            .select_related()
             .annotate(full_price=Sum(F('elements__price') * F('elements__quantity')))
-            .order_by('-id')
         )
 
     def with_coordinates(self):

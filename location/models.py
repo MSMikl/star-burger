@@ -17,7 +17,6 @@ class LocationManager(models.Manager):
                 longitude=lon,
                 latitude=lat,
             )
-            location.save()
         return {'longitude': location.longitude,
                 'latitude': location.latitude
         }
