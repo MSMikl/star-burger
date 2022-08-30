@@ -59,6 +59,12 @@ pip install -r requirements.txt
 SECRET_KEY=django-insecure-0if40nf4nf93n4
 ```
 
+Также в файл `.env` добавьте ключ от "Яндекс.Геокодера"
+```
+YA_GEOCODER_API_KEY = {ключ API [Яндекс.геокодера](https://yandex.ru/dev/maps/geocoder/) для преобразования адресов в координаты}
+```
+
+
 Создайте файл базы данных SQLite и отмигрируйте её следующей командой:
 
 ```sh
