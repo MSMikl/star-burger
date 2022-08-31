@@ -140,15 +140,16 @@ def view_orders(request):
             continue
         available_rests = []
         for (restaurant, menu) in product_availability.items():
-            if order_elements_dict[order].issubset(menu):
-                if not restaurants_coordinates[restaurant]['longitude'] or not order.longitude:
-                    distance_text = 'Ошибка определения координат'
-                else:
-                    distance_text = f"""{round(distance.distance(
-                        tuple(restaurants_coordinates[restaurant].values()),
-                        (order.longitude, order.latitude)
-                    ).km, 2)} км"""
-                available_rests.append((restaurant.name, distance_text))
+            if not order_elements_dict[order].issubset(menu):
+                continue
+            if not restaurants_coordinates[restaurant]['longitude'] or not order.longitude:
+                distance_text = 'Ошибка определения координат'
+            else:
+                distance_text = f"""{round(distance.distance(
+                    tuple(restaurants_coordinates[restaurant].values()),
+                    (order.longitude, order.latitude)
+                ).km, 2)} км"""
+            available_rests.append((restaurant.name, distance_text))
         data['items'][-1]['available_rests'] = available_rests
 
     return render(request, template_name='order_items.html', context=data)
