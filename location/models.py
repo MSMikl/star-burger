@@ -17,9 +17,7 @@ class LocationManager(models.Manager):
                 longitude=lon,
                 latitude=lat,
             )
-        return {'longitude': location.longitude,
-                'latitude': location.latitude
-        }
+        return location
 
 
 class Location(models.Model):
