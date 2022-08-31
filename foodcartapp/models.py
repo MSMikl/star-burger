@@ -213,7 +213,7 @@ class Order(models.Model):
     )
     created_at = models.DateTimeField(
         'Время создания заказа',
-        default=timezone.now()
+        default=timezone.now
     )
     called_at = models.DateTimeField(
         'Время звонка клиенту',
