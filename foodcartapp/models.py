@@ -172,9 +172,11 @@ class Order(models.Model):
     ]
     ONLINE = 'online'
     CASH = 'cash'
+    ND = 'not_defined'
     PAYMENT_METHOD_CHOICES = [
         (ONLINE, 'Онлайн'),
         (CASH, 'Наличными'),
+        (ND, 'Не указано'),
     ]
 
     firstname = models.CharField(
@@ -229,7 +231,7 @@ class Order(models.Model):
         'Способ оплаты',
         max_length=20,
         choices=PAYMENT_METHOD_CHOICES,
-        default='cash',
+        default='not_defined',
         db_index=True
     )
     assigned_at = models.ForeignKey(
