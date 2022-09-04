@@ -123,7 +123,7 @@ def view_orders(request):
     data = {'items': []}
 
     for order in orders:
-        data['items'].append(
+        data['orders'].append(
             {
                 'id': order.id,
                 'full_price': order.full_price,
