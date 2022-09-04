@@ -40,7 +40,7 @@ class Location(models.Model):
     )
     time_refreshed = models.DateTimeField(
         'Время последнего обновления',
-        default=timezone.now()
+        default=timezone.now
     )
 
     objects = LocationManager()
