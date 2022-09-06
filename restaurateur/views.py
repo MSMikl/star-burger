@@ -150,6 +150,6 @@ def view_orders(request):
                     (order.longitude, order.latitude)
                 ).km, 2)} км"""
             available_rests.append((restaurant.name, distance_text))
-        data['items'][-1]['available_rests'] = available_rests
+        data['orders'][-1]['available_rests'] = available_rests
 
     return render(request, template_name='order_items.html', context=data)
