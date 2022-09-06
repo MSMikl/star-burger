@@ -120,7 +120,7 @@ def view_orders(request):
     for order_element in order_elements:
         order_elements_dict[order_element.order].add(order_element.product.id)
 
-    data = {'items': []}
+    data = {'orders': []}
 
     for order in orders:
         data['orders'].append(
