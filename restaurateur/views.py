@@ -120,10 +120,10 @@ def view_orders(request):
     for order_element in order_elements:
         order_elements_dict[order_element.order].add(order_element.product.id)
 
-    data = {'orders': []}
+    data_to_render = {'orders': []}
 
     for order in orders:
-        data['orders'].append(
+        data_to_render['orders'].append(
             {
                 'id': order.id,
                 'full_price': order.full_price,
@@ -150,6 +150,6 @@ def view_orders(request):
                     (order.longitude, order.latitude)
                 ).km, 2)} км"""
             available_rests.append((restaurant.name, distance_text))
-        data['orders'][-1]['available_rests'] = available_rests
+        data_to_render['orders'][-1]['available_rests'] = available_rests
 
-    return render(request, template_name='order_items.html', context=data)
+    return render(request, template_name='order_items.html', context=data_to_render)
