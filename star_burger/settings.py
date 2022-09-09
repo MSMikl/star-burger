@@ -121,6 +121,7 @@ INTERNAL_IPS = [
     '127.0.0.1'
 ]
 
+CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS')
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "assets"),
