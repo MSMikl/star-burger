@@ -24,6 +24,6 @@ def process_http_request(environ, start_response):
         ('Content-type', 'text/html; charset=utf-8'),
     ]
     start_response(status, response_headers)
-    html = HTML.format(ip_address=environ.get("REMOTE_ADDR", 'Error')
+    html = HTML.format(ip_address=environ.get("REMOTE_ADDR", 'Error'))
     html_as_bytes = html.encode('utf-8')
     return [html_as_bytes]
