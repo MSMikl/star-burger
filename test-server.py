@@ -1,3 +1,5 @@
+from pprint import pprint
+
 HTML = """
 <!doctype html>
 <html lang="ru">
@@ -26,4 +28,5 @@ def process_http_request(environ, start_response):
     start_response(status, response_headers)
     html = HTML.format(ip_address=environ.get("REMOTE_ADDR", 'Error'))
     html_as_bytes = html.encode('utf-8')
+    pprint(environ)
     return [html_as_bytes]
