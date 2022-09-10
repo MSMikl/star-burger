@@ -11,7 +11,7 @@ HTML = """
     <div class="container">
       <h1 class="text-white text-center mx-auto p-2 mt-4 mb-3">Ваш IP-адрес</h1>
       <div class="bg-light card-block mx-auto text-center">
-        <h1 class="display-3 p-2">0.0.0.0</h1>
+        <h1 class="display-3 p-2">{ip_address}</h1>
       </div>
     </div>
   </body>
@@ -24,5 +24,6 @@ def process_http_request(environ, start_response):
         ('Content-type', 'text/html; charset=utf-8'),
     ]
     start_response(status, response_headers)
-    html_as_bytes = HTML.encode('utf-8')
+    html = HTML.format(ip_address=environ["REMOTE_ADDR"])
+    html_as_bytes = html.encode('utf-8')
     return [html_as_bytes]
