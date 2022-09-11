@@ -151,5 +151,6 @@ def view_orders(request):
                 ).km, 2)} км"""
             available_rests.append((restaurant.name, distance_text))
         data_to_render['orders'][-1]['available_rests'] = available_rests
+    1/0
 
     return render(request, template_name='order_items.html', context=data_to_render)

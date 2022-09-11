@@ -14,3 +14,4 @@ phonenumbers==8.12.52
 Pillow==8.2.0
 python-dotenv==0.20.0
 requests==2.28.1
+rollbar
