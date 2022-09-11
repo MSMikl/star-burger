@@ -1,6 +1,7 @@
 import os
 
 import dj_database_url
+import rollbar
 
 from environs import Env
 
@@ -42,6 +43,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'rollbar.contrib.django.middleware.RollbarNotifierMiddlewareExcluding404',
 ]
 
 ROOT_URLCONF = 'star_burger.urls'
@@ -60,6 +62,14 @@ DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.logging.LoggingPanel',
     'debug_toolbar.panels.redirects.RedirectsPanel',
 ]
+
+ROLLBAR = {
+     'access_token': env('ROLLBAR_TOKEN', None),
+     'environment': env('ROLLBAR_ENVIRONMENT', 'default'),
+     'root': BASE_DIR,
+}
+
+rollbar.init(**ROLLBAR)
 
 TEMPLATES = [
     {
