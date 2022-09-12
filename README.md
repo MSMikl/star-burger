@@ -64,8 +64,13 @@ SECRET_KEY=django-insecure-0if40nf4nf93n4
 YA_GEOCODER_API_KEY = {ключ API [Яндекс.геокодера](https://yandex.ru/dev/maps/geocoder/) для преобразования адресов в координаты}
 ```
 
+В проекте используется СУБД PostrgreSQL. Настройки доступа к ней внесите в файл `.env` строкой следующего формата
 
-Создайте файл базы данных SQLite и отмигрируйте её следующей командой:
+```
+DB_URL = postgres://USER:PASSWORD@HOST:PORT/NAME
+```
+
+Запустите стартовую миграцию:
 
 ```sh
 python manage.py migrate
@@ -155,6 +160,7 @@ Parcel будет следить за файлами в каталоге `bundle
 - `ALLOWED_HOSTS` — [см. документацию Django](https://docs.djangoproject.com/en/3.1/ref/settings/#allowed-hosts)
 - `YA_GEOCODER_API_KEY` — ключ API [Яндекс.геокодера](https://yandex.ru/dev/maps/geocoder/) для преобразования адресов в координаты
 - `CSRF_TRUSTED_ORIGINS` - [см. документацию Django](https://docs.djangoproject.com/en/4.1/ref/settings/#csrf-trusted-origins)
+- `DB_URL` - строка доступа к PostgreSQL формата `postgres://USER:PASSWORD@HOST:PORT/NAME`
 
 Для диагностики работы сайта в проекте применяется сервис [Rollbar](https://rollbar.com/). Чтобы воспользоваться его возможностями, следует зарегистрироваться, получить токен и вписать его в файл `.env`
 
