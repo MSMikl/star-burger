@@ -22,6 +22,7 @@ lib/
 lib64/
 parts/
 sdist/
+static/
 var/
 wheels/
 share/python-wheels/
@@ -62,7 +63,7 @@ cover/
 # Django stuff:
 *.log
 local_settings.py
-db.sqlite3
+db.sqlite3*
 db.sqlite3-journal
 
 # Flask stuff:
